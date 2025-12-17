@@ -24,6 +24,7 @@ def retrieve_mlb_id(player_name: str, players_df: pl.DataFrame) -> int:
 
     return players_df.filter(pl.col("Name") == player_name)["MLBAMID"][0]
 
+
 # ======================================================
 # 2️⃣  Retrieve Pitch-Level Data from Baseball Savant
 # ======================================================
@@ -50,7 +51,7 @@ def call_statcast_pitcher(
             "inning": pl.Int32,
             "outs": pl.Int32,
         },
-    ) #.with_columns(pl.col("pitch_type"))  # .fill_null(value = None).drop_nulls())
+    )
 
     # Preprocessing
 
@@ -67,10 +68,10 @@ def call_statcast_pitcher(
     )
 
     if platoon == "LHB":
-        return df.filter(pl.col("stand") > "L")
+        return df.filter(pl.col("stand") == "L")
     elif platoon == "RHB":
-        return df.filter(pl.col("stand") > "R")
-    return df
+        return df.filter(pl.col("stand") == "R")
+    return df.drop_nulls(subset=["pitch_type"])
 
 
 # ======================================================
@@ -90,25 +91,35 @@ def define_additional_cols(uneriched_data: pl.DataFrame) -> pl.DataFrame:
     :return: enriched data with all necessary columns for sequencing calculations
     """
 
-    return uneriched_data.sort(["game_date", "pitcher", "batter", "inning", "pitch_number"]).with_columns(
-        new_ab=(pl.col("batter") != pl.col("batter").shift(1))
-        | (pl.col("inning") != pl.col("inning").shift(1))
-        | (pl.col("outs_when_up") < pl.col("outs_when_up").shift(1))
-        .alias("new_ab")
-        .cast(pl.Int32)
-    ).with_columns(pl.col("new_ab").cum_sum().over("pitcher").alias("at_bat_id")).with_columns(
-        pl.concat_str(["pitch_type", "zone"], separator="; Zone:").alias(
-            "pitch_zone_combo"
+    return (
+        uneriched_data.sort(
+            ["game_date", "pitcher", "batter", "inning", "pitch_number"]
         )
-    ).with_columns(
-        pl.concat_str(["pitch_group", "zone"], separator="; Zone:").alias(
-            "pitch_group_combo"
+        .with_columns(
+            new_ab=(pl.col("batter") != pl.col("batter").shift(1))
+            | (pl.col("inning") != pl.col("inning").shift(1))
+            | (pl.col("outs_when_up") < pl.col("outs_when_up").shift(1))
+            .alias("new_ab")
+            .cast(pl.Int32)
+        )
+        .with_columns(pl.col("new_ab").cum_sum().over("pitcher").alias("at_bat_id"))
+        .with_columns(
+            pl.concat_str(["pitch_type", "zone"], separator="; Zone:").alias(
+                "pitch_zone_combo"
+            )
+        )
+        .with_columns(
+            pl.concat_str(["pitch_group", "zone"], separator="; Zone:").alias(
+                "pitch_group_combo"
+            )
         )
     )
+
 
 # ======================================================
 # 4️⃣  Create a Sequence of Pitches for Each At-Bat
 # ======================================================
+
 
 # We now group the data by pitcher and at-bat, and collect the ordered list of pitches.
 def create_pitch_sequencing(enriched_df: pl.DataFrame, choice: str) -> pl.DataFrame:
@@ -139,11 +150,10 @@ def get_combinations(seq: str, r=2) -> list:
     returns ordered combinations of paired pitches
     """
 
-
     return [tuple(seq[i : i + r]) for i in range(len(seq) - r + 1)]
 
 
-def count_combinations(pitch_sequences: pl.DataFrame)->pl.DataFrame:
+def count_combinations(pitch_sequences: pl.DataFrame) -> pl.DataFrame:
     """
     Count of combinations from each pitch sequence list
 
@@ -151,6 +161,7 @@ def count_combinations(pitch_sequences: pl.DataFrame)->pl.DataFrame:
     :return: DataFrame with each pitcher's most frequent pair
 
     """
+
     combo_counter = Counter()
 
     # Count combos for each pitcher across all at-bats
@@ -162,21 +173,18 @@ def count_combinations(pitch_sequences: pl.DataFrame)->pl.DataFrame:
             combo_counter[(pitcher, c)] += 1
 
     # Convert counts to DataFrame for easy filtering and visualization
-    return pl.DataFrame(
-        [(p, c[0], c[1], count) for (p, c), count in combo_counter.items()],
-        schema=["Pitcher", "Pitch 1", "Pitch 2", "Amount"],
-    ).sort(["Pitcher", "Amount"], descending=[False, True])
+    return (
+        pl.DataFrame(
+            [(p, c[0], c[1], count) for (p, c), count in combo_counter.items()],
+            schema=["Pitcher", "Pitch 1", "Pitch 2", "Amount"],
+            orient="row",
+        )
+        .sort(["Pitcher", "Amount"], descending=[False, True])
+        .with_columns(
+            pl.col("Amount").truediv((pl.col("Amount").sum()) / 100).round(2).alias("%")
+        )
+    )
 
 
 # To-Do
-# Turn into Streamlit dashboard
-# Add Player drop down to streamlit ✅
-# Add Savant Filtering ✅
-# Add 2/3 pitch filtering
-# Add Team/League Filtering
-# Add Export Button to different steps ✅
-# Add Platoon ✅
-# ways to export the data ✅
-# change everything to polars - almost
-# Add count - solution: attach plinko to each player
-#https://baseballsavant.mlb.com/player-scroll?player_id=656849#plinko
+# Add percentages to team/league

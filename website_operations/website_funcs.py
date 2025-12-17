@@ -1,5 +1,3 @@
-import streamlit as st
-
 from pathlib import Path
 
 # Retreats Directory From Parent Path
@@ -19,7 +17,6 @@ from calculations.calculate_sequencing import (
     create_pitch_sequencing,
     count_combinations,
 )
-from uuid import uuid4
 from typing import Any
 import polars as pl
 
@@ -33,7 +30,7 @@ def calculate_sequence(
 ):
     """
 
-    Runs the five core functions that create the sequencing dashboard
+    Runs the five core functions that creates the sequencing dashboard
 
     :param pitcher: Pitcher selected in streamlit drop-down
     :param players: players.csv df
@@ -57,14 +54,7 @@ def calculate_sequence(
     pitch_sequences = create_pitch_sequencing(enriched_player_data, sequencing_choice)
     table = count_combinations(pitch_sequences).head(15)
 
-    return table, pitch_sequences
+    return table, pitch_sequences, mlbID
 
-''''''
-def create_csv_button(df, name):
-    st.download_button(
-        f"Download {name}",
-        df.write_csv(".csv"),
-        f"{name}.csv",
-        "text/csv",
-        key=uuid4(),
-    )
+
+""""""
