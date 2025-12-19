@@ -27,20 +27,18 @@ with st.container(border=True):
     head_col1, head_col2 = st.columns(2)
     # Create Headers
     with head_col1:
-        st.title("Pitch Sequencing")
+        st.subheader("Pitch Sequencing")
         st.write(
-            "**Paired Pitches** provides an insight into a pitcher's arsenal by providing a window into their intent to tunnel pitches. Two pitches that are frequently paired together and land in opposing zones may follow a similar path and diverge after they reach the batter's decision point"
+            "**Paired Pitches** provides an insight into a pitcher's arsenal by providing a window into their intent to tunnel pitches. "
         )
         st.text("")
         st.write(
-            "This dashboard visualizes the most frequent **Paired Pitches** from the 2025 MLB Season. \n Location is optionally included in the return to serve as an insight into pitch tunnelling. **The Location Zones are located on the right**"
+            "This website visualizes the most frequent **Paired Pitches** from the 2025 MLB Season. \n Location is optionally included in the return to serve as an insight into pitch tunnelling. \n\n **Location Zones are located on the right**"
         )
-        st.text("")
     with head_col2:
-        st.image(parent_directory / "zones.png", width=325)
+        st.image(parent_directory / "zones.png", width=220)
 
     st.write("-----")
-
     # Adds Filters to Sidebar
     with st.sidebar:
         st.sidebar.header("Filters")
@@ -139,6 +137,6 @@ with st.container(border=True):
     with st.expander("Click For More Information"):
         (
             st.write(
-                "Location is measured using Baseball Savant's predefined Gameday Zones. \n Pitch Pairs are reset upon a new batter, inning, or out status \n With Questions,concerns, or comments, please contact Matt Mancuso at mancusom33@gmail.com"
+                "Location is measured using Baseball Savant's predefined Gameday Zones. \n Pitch Pairs are reset upon a new batter, inning, or out status \n Data is retrieved in real-time using the Baseball Savant functionality in pybaseball \n With Questions,concerns, or comments, please contact Matt Mancuso at mancusom33@gmail.com"
             )
         )

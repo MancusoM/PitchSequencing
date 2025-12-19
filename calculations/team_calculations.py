@@ -1,4 +1,3 @@
-import pandas as pd
 from pybaseball import statcast
 from calculations.calculate_sequencing import (
     define_additional_cols,
@@ -26,7 +25,7 @@ print(pretty_time)
 players = read_df(parent_directory / "data/players.csv")
 
 teams_df = pl.DataFrame()
-for team in team_list[0:10]:
+for team in team_list[2:10]:
     print("Processing:", team)
 
     opening, closing = mlb_2025_dates.get(team)[0], mlb_2025_dates.get(team)[1]
@@ -100,7 +99,7 @@ for team in team_list[0:10]:
     # Example format: "October 30, 2025 at 08:13 PM"
     pretty_time = now.strftime("%B %d, %Y at %I:%M %p %S")
     print(f"Going to sleep now at {pretty_time}")
-    time.sleep(20)
+    time.sleep(40)
 
 teams_df = teams_df.sort(by="Amount", descending=True)
 
