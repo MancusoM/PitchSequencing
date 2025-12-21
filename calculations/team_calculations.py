@@ -22,10 +22,12 @@ now = datetime.now()
 # Example format: "October 30, 2025 at 08:13 PM"
 pretty_time = now.strftime("%B %d, %Y at %I:%M %p")
 print(pretty_time)
-players = read_df(parent_directory / "data/players.csv")
+players = read_df(parent_directory / "data/players.csv")  # type:ignore
 
 teams_df = pl.DataFrame()
-for team in team_list[2:10]:
+
+big_df = pl.DataFrame()
+for team in team_list[0:2]:
     print("Processing:", team)
 
     opening, closing = mlb_2025_dates.get(team)[0], mlb_2025_dates.get(team)[1]
@@ -77,6 +79,7 @@ for team in team_list[2:10]:
     enriched_data = define_additional_cols(data)
 
     for i in ["pitch_type", "pitch_zone_combo", "pitch_group", "pitch_group_combo"]:
+        counter_1 = 0
         pitch_sequences = create_pitch_sequencing(enriched_data, i)
         combinations = count_combinations(pitch_sequences)
         team_combinations = (
@@ -90,9 +93,13 @@ for team in team_list[2:10]:
         percentages = calculate_percentage(team_combinations)
 
         enriched_team_combinations = percentages.with_columns(
-            ((pl.col("Amount") / pl.col("Amount_right")*100).round(2)).alias("%")
+            ((pl.col("Amount") / pl.col("Amount_right") * 100).round(2)).alias("%")
         )
+
         teams_df = pl.concat([teams_df, enriched_team_combinations])
+        teams_df = teams_df.sort(by="Amount", descending=True)
+        teams_df.write_csv(parent_directory / "data/teams.csv")
+
     now = datetime.now()
 
     # Format the datetime object into a readable string
@@ -101,9 +108,9 @@ for team in team_list[2:10]:
     print(f"Going to sleep now at {pretty_time}")
     time.sleep(40)
 
-teams_df = teams_df.sort(by="Amount", descending=True)
+# teams_df = teams_df.sort(by="Amount", descending=True)
 
-teams_df.write_csv(parent_directory / "data/teams.csv")
+# teams_df.write_csv(parent_directory / "data/teams.csv")
 now = datetime.now()
 
 # Format the datetime object into a readable string

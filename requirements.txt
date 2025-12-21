@@ -1,0 +1,6 @@
+polars==1.36.1
+pandas>=2.3.3
+pybaseball>=2.2.6
+streamlit==1.52.2
+pathlib==1.0.1
+typing==3.7.4

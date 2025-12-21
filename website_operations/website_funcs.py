@@ -39,8 +39,8 @@ def calculate_sequence(
     :param platoon: applicable if the user selects a filter option on Streamlit
 
     :return:
-        table that's generated in Streamlit
-        pitch_sequences: returned to data can be downloaded
+        table: formatted pitch sequencing table that's generated in Streamlit
+        pitch_sequences: untransformed sequencing data can be downloaded
 
     """
 
@@ -55,6 +55,3 @@ def calculate_sequence(
     table = count_combinations(pitch_sequences).head(15)
 
     return table, pitch_sequences, mlbID
-
-
-""""""

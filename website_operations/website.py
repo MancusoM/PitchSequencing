@@ -12,11 +12,11 @@ current_script_path = Path(__file__).resolve()
 parent_directory = current_script_path.parent
 data_directory = current_script_path.parent.parent
 
-from const import read_df
 from helper_functions.helpers import (
     run_main_functions,
     calculate_team_sequencing,
     calculate_league_sequencing,
+    read_df,
 )
 
 # Create Website Emoji
@@ -39,15 +39,19 @@ with st.container(border=True):
         st.image(parent_directory / "zones.png", width=220)
 
     st.write("-----")
+
     # Adds Filters to Sidebar
     with st.sidebar:
         st.sidebar.header("Filters")
 
+        # Adds Team/Player/League Filter
         Filter = st.selectbox("Filters", ["Players", "Team", "League"], key="Grouping")
 
-        players = read_df(data_directory / "data/players.csv")
+        # Creates Unique Players list
+        players = read_df(data_directory / "data/players.csv")  # type:ignore
         players_list = set(players["Name"].to_list())
 
+        # Sets Data Range
         selected_range = st.date_input(
             "Select a date range",
             value=(date(2025, 3, 27), date(2025, 10, 2)),  # Default range
@@ -56,8 +60,10 @@ with st.container(border=True):
             key="date",
         )
 
+        # Adds Platoon Filter
         platoon = st.selectbox("Platoon", ["None", "LHB", "RHB"], key="platoon")
 
+    # Adds Sequencing Filter
     Return_Filters = st.selectbox(
         "Filters",
         [
@@ -96,15 +102,19 @@ with st.container(border=True):
                 pitcher, players, "pitch_group_combo", selected_range, platoon
             )
 
+    # Controls Team Filter Page
     if Filter == "Team":
-        team_df = read_df(data_directory / "data/teams.csv")
+        team_df = read_df(data_directory / "data/teams.csv")  # type:ignore
         teams = list(set(team_df["Team"]))
         teams.append("All")
 
+        # Adds Functionality to Return all Teams Data
         with st.sidebar:
             default_index = teams.index("All")
             team = st.selectbox("Choose team", teams, index=default_index)
-        st.write("Select a Team on the Drop-Down on the left side")
+        st.write(
+            "Select a Team on the Drop-Down on the left side. Returning the top 100 combinations"
+        )
 
         if Return_Filters == "Pitch Pairs":
             table = calculate_team_sequencing(team_df, team, "pitch_type")
@@ -118,8 +128,9 @@ with st.container(border=True):
         if Return_Filters == "Pitch Grouping Pairs With Location":
             table = calculate_team_sequencing(team_df, team, "pitch_group_combo")
 
+    # Controls League Filter
     if Filter == "League":
-        team_df = read_df(data_directory / "data/teams.csv")
+        team_df = read_df(data_directory / "data/teams.csv")  # type:ignore
 
         if Return_Filters == "Pitch Pairs":
             calculate_league_sequencing(team_df, "pitch_type")

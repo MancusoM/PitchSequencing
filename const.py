@@ -1,9 +1,3 @@
-import polars as pl
-
-
-def read_df(df):
-    return pl.read_csv(df)
-
 
 pitch_types = {
     "EP": "Eeuphus",
