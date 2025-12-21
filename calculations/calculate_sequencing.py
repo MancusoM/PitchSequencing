@@ -19,7 +19,7 @@ def retrieve_mlb_id(player_name: str, players_df: pl.DataFrame) -> int:
 
     :param player_name: Player Name chosen from Streamlit drop-down
     :param players_df: players.csv
-    :return: corresponding MLB_aM ID
+    :return: corresponding MLBAM ID
     """
 
     return players_df.filter(pl.col("Name") == player_name)["MLBAMID"][0]
@@ -184,7 +184,3 @@ def count_combinations(pitch_sequences: pl.DataFrame) -> pl.DataFrame:
             pl.col("Amount").truediv((pl.col("Amount").sum()) / 100).round(2).alias("%")
         )
     )
-
-
-# To-Do
-# Add percentages to team/league
