@@ -35,6 +35,8 @@ This Python script powers the backend of a Streamlit "Pitch Sequencing" Dashboar
 #### images
 - Conclusions generated from the `Pitch Sequencing` streamlit application
   - Example 1:
-      - xyz
+      - Devin Williams's 2025 Pitch Sequences 
   - Example 2:
-      - abc
+      - Leaderboard of 2025 Pitch Sequences 
+  - Example 3:
+      - Leaderboard of 2025 Pitch Sequences with Location Included
