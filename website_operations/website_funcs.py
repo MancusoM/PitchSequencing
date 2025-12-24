@@ -52,6 +52,6 @@ def calculate_sequence(
 
     enriched_player_data = define_additional_cols(player_pitch_data)
     pitch_sequences = create_pitch_sequencing(enriched_player_data, sequencing_choice)
-    table = count_combinations(pitch_sequences).head(15)
+    table = count_combinations(pitch_sequences).head(20)
 
     return table, pitch_sequences, mlbID

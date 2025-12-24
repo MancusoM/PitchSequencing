@@ -84,7 +84,7 @@ def calculate_team_sequencing(
     else:
         filter = (pl.col("Team") == team) & (pl.col("Call") == api_call)
 
-    table = df.lazy().filter(filter).head(100).collect()
+    table = df.lazy().filter(filter).sort("Amount", descending=True).head(200).collect()
 
     st.dataframe(table[["Name", "Pitch 1", "Pitch 2", "Amount", "%"]])
     create_csv_button(table, "Team Sequencing")
