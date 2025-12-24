@@ -33,7 +33,7 @@ with st.container(border=True):
         )
         st.text("")
         st.write(
-            "This website visualizes the most frequent **Paired Pitches** from the 2025 MLB Season. \n Location is optionally included in the return to serve as an insight into pitch tunnelling. \n\n **Location Zones are located on the right**"
+            "This website visualizes the most frequent **Paired Pitches** from the 2025 MLB Season. \n Location is optionally included in the return to serve as an insight into pitch tunnelling. Location Zones are located on the right"
         )
     with head_col2:
         st.image(parent_directory / "zones.png", width=220)
