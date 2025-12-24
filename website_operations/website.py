@@ -27,9 +27,9 @@ with st.container(border=True):
     head_col1, head_col2 = st.columns(2)
     # Create Headers
     with head_col1:
-        st.subheader("Pitch Sequencing")
+        st.subheader("Pitch Pairs")
         st.write(
-            "**Paired Pitches** provides an insight into a pitcher's arsenal by providing a window into their intent to tunnel pitches. "
+            "**Paired Pitches** provides an insight into a pitcher's arsenal by exploring the frequencies of sequences & by providing a window into their intent to tunnel pitches. "
         )
         st.text("")
         st.write(
@@ -45,7 +45,13 @@ with st.container(border=True):
         st.sidebar.header("Filters")
 
         # Adds Team/Player/League Filter
-        Filter = st.selectbox("Filters", ["Players", "Team", "League"], key="Grouping")
+        Filter = st.selectbox(
+            "Filters",
+            ["Players", "Team", "League"],
+            key="Grouping",
+            help="Click to Filter Sequencing on at a Player,Team, or League level",
+            label_visibility="visible",
+        )
 
         # Creates Unique Players list
         players = read_df(data_directory / "data/players.csv")  # type:ignore
@@ -61,7 +67,13 @@ with st.container(border=True):
         )
 
         # Adds Platoon Filter
-        platoon = st.selectbox("Platoon", ["None", "LHB", "RHB"], key="platoon")
+        platoon = st.selectbox(
+            "Platoon",
+            ["None", "LHB", "RHB"],
+            key="platoon",
+            help="Click to Select Pitch Sequences thrown to a LHB or RHB [Optional]",
+            label_visibility="visible",
+        )
 
     # Adds Sequencing Filter
     Return_Filters = st.selectbox(
@@ -73,15 +85,23 @@ with st.container(border=True):
             "Pitch Grouping Pairs With Location",
         ],
         key="Display Preference",
+        help="Flip Through to Select Different Pitch Sequences",
+        label_visibility="visible",
     )
 
     # Controls the Player Page
     if Filter == "Players":
         with st.sidebar:
             default_player = list(players_list).index("Clay Holmes")
-            pitcher = st.selectbox("Choose pitcher", players_list, index=default_player)
+            pitcher = st.selectbox(
+                "Choose pitcher",
+                players_list,
+                index=default_player,
+                help="Select Pitcher",
+                label_visibility="visible",
+            )
 
-        st.write(f"{pitcher}'s 20 Most Frequent Pitch Pairs")
+        st.write(f"{pitcher}'s 20 Most Frequent Pitch Sequences")
 
         if Return_Filters == "Pitch Pairs":
             table, sequence = run_main_functions(
@@ -113,7 +133,7 @@ with st.container(border=True):
             default_index = teams.index("All")
             team = st.selectbox("Choose team", teams, index=default_index)
         st.write(
-            "Select a Team on the Drop-Down on the left side. Returning the top 100 combinations"
+            "Select a Team on the Drop-Down on the left side. Returning the top 150 sequences"
         )
 
         if Return_Filters == "Pitch Pairs":
@@ -148,6 +168,6 @@ with st.container(border=True):
     with st.expander("Click For More Information"):
         (
             st.write(
-                "Location is measured using Baseball Savant's predefined Gameday Zones. \n Pitch Pairs are reset upon a new batter, inning, or out status \n Data is retrieved in real-time using the Baseball Savant functionality in pybaseball \n With Questions,concerns, or comments, please contact Matt Mancuso at mancusom33@gmail.com"
+                "Location is measured using Baseball Savant's predefined Gameday Zones. \n\n Pitch Pairs are reset upon a new batter, inning, or out status \n\n Data is retrieved in real-time using the Baseball Savant functionality in PyBaseball \n\n With questions,concerns, or comments, please contact Matt Mancuso at mancusom33@gmail.com"
             )
         )

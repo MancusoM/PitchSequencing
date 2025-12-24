@@ -5,10 +5,10 @@ from calculations.calculate_sequencing import (
     count_combinations,
 )
 import polars as pl
-from const import pitch_groups, pitch_types, team_list, read_df, mlb_2025_dates
+from const import pitch_groups, pitch_types, team_list, mlb_2025_dates
 import time
 from datetime import datetime
-from helper_functions.helpers import calculate_percentage
+from helper_functions.helpers import calculate_percentage, read_df
 
 from pathlib import Path
 
@@ -24,10 +24,9 @@ pretty_time = now.strftime("%B %d, %Y at %I:%M %p")
 print(pretty_time)
 players = read_df(parent_directory / "data/players.csv")  # type:ignore
 
-teams_df = pl.DataFrame()
 
-big_df = pl.DataFrame()
-for team in team_list[0:2]:
+for team in team_list[18:19]:  # 18:21
+    teams_df = pl.DataFrame()
     print("Processing:", team)
 
     opening, closing = mlb_2025_dates.get(team)[0], mlb_2025_dates.get(team)[1]
@@ -77,9 +76,8 @@ for team in team_list[0:2]:
         raise ConnectionError("API timed out or return consists of an empty DataFrame")
 
     enriched_data = define_additional_cols(data)
-
+    dataframe = pl.DataFrame()
     for i in ["pitch_type", "pitch_zone_combo", "pitch_group", "pitch_group_combo"]:
-        counter_1 = 0
         pitch_sequences = create_pitch_sequencing(enriched_data, i)
         combinations = count_combinations(pitch_sequences)
         team_combinations = (
@@ -95,10 +93,11 @@ for team in team_list[0:2]:
         enriched_team_combinations = percentages.with_columns(
             ((pl.col("Amount") / pl.col("Amount_right") * 100).round(2)).alias("%")
         )
+        dataframe = pl.concat([dataframe, enriched_team_combinations])
 
-        teams_df = pl.concat([teams_df, enriched_team_combinations])
-        teams_df = teams_df.sort(by="Amount", descending=True)
-        teams_df.write_csv(parent_directory / "data/teams.csv")
+    dataframe.to_pandas().to_csv(
+        f"{parent_directory}/data/teams.csv", mode="a", index=False, header=False
+    )
 
     now = datetime.now()
 

@@ -1,4 +1,3 @@
-
 pitch_types = {
     "EP": "Eeuphus",
     "SV": "Slurve",
@@ -14,6 +13,7 @@ pitch_types = {
     "FF": "Four-Seam Fastball",
     "SC": "Screwball",
     "KC": "Knuckle Curve",
+    "KN": "Knuckeball",
     "FA": "Other",
 }
 
@@ -32,6 +32,7 @@ pitch_groups = {
     "Splitter": "Offspeed",
     "Forkball": "Offspeed",
     "Sweeper": "Offspeed",
+    "Knuckeball": "Other",
 }
 
 teams_dict = {
