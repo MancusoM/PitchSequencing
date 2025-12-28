@@ -24,32 +24,23 @@ st.set_page_config(page_icon="⚾️️", layout="wide", page_title="Pitch Pairs
 
 # Create Border and configures webpage layout
 with st.container(border=True):
-    head_col1, head_col2 = st.columns(2)
     # Create Headers
-    with head_col1:
-        st.subheader("Pitch Pairs")
-        st.write(
-            "**Paired Pitches** provides an insight into a pitcher's arsenal by exploring the frequencies of sequences & by providing a window into their intent to tunnel pitches. "
-        )
-        st.text("")
-        st.write(
-            "This website visualizes the most frequent **Paired Pitches** from the 2025 MLB Season. \n Location is optionally included in the return to serve as an insight into pitch tunnelling. Location Zones are located on the right"
-        )
-    with head_col2:
-        st.image(parent_directory / "zones.png", width=220)
+    st.subheader("Pitch Pairs ⚾️")
+    st.write(
+        "**Pitch Pairs** explores the frequencies of pitch sequences from 2025.\nLocation is optionally included. Location Zones are located on the left."
+    )
+    st.write("**Wait 10 seconds to the information to populate**")
 
     st.write("-----")
 
     # Adds Filters to Sidebar
     with st.sidebar:
-        st.sidebar.header("Filters")
-
         # Adds Team/Player/League Filter
         Filter = st.selectbox(
             "Filters",
             ["Players", "Team", "League"],
             key="Grouping",
-            help="Click to Filter Sequencing on at a Player,Team, or League level",
+            help="Click to Filter Sequencing at a Player, Team, or League level",
             label_visibility="visible",
         )
 
@@ -71,9 +62,10 @@ with st.container(border=True):
             "Platoon",
             ["None", "LHB", "RHB"],
             key="platoon",
-            help="Click to Select Pitch Sequences thrown to a LHB or RHB [Optional]",
+            help="Click to Select Pitch Sequences thrown to a LHB or RHB [Optional]. Default: None",
             label_visibility="visible",
         )
+        st.image(parent_directory / "zones.png", width=250)
 
     # Adds Sequencing Filter
     Return_Filters = st.selectbox(
@@ -126,9 +118,11 @@ with st.container(border=True):
     if Filter == "Team":
         team_df = read_df(data_directory / "data/teams.csv")  # type:ignore
         teams = list(set(team_df["Team"]))
-        teams.append("All")
+        teams.remove("NYM")
+        teams.insert(0, "All")
+        teams.insert(1, "NYM")
 
-        # Adds Functionality to Return all Teams Data
+        # Adds Functionality to return data from teams.csv
         with st.sidebar:
             default_index = teams.index("All")
             team = st.selectbox("Choose team", teams, index=default_index)

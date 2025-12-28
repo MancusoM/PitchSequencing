@@ -19,7 +19,6 @@ parent_directory = current_script_path.parent.parent
 now = datetime.now()
 
 # Format the datetime object into a readable string
-# Example format: "October 30, 2025 at 08:13 PM"
 pretty_time = now.strftime("%B %d, %Y at %I:%M %p")
 print(pretty_time)
 players = read_df(parent_directory / "data/players.csv")  # type:ignore
@@ -107,9 +106,6 @@ for team in team_list[18:19]:  # 18:21
     print(f"Going to sleep now at {pretty_time}")
     time.sleep(40)
 
-# teams_df = teams_df.sort(by="Amount", descending=True)
-
-# teams_df.write_csv(parent_directory / "data/teams.csv")
 now = datetime.now()
 
 # Format the datetime object into a readable string

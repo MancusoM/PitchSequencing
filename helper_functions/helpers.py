@@ -1,7 +1,7 @@
 from website_operations.website_funcs import calculate_sequence
 import streamlit as st
 import polars as pl
-from typing import Union, Any
+from typing import Any
 import pandas as pd
 
 
@@ -11,13 +11,13 @@ def run_main_functions(
     sequencing_choice: str,
     selected_range: Any,
     platoon: str,
-) -> Union[pl.DataFrame, pl.DataFrame]:
+) -> tuple[Any, Any]:
     """
 
     Runs Main Sequencing Functions to return table to streamlit dashboard
 
-    :param pitcher: - player Name chosen from Streamlit drop-down. Example: "Skubal, Tarik" etc
-    :param players: players.csv from Fangraphs (can this be shifted)
+    :param pitcher: - player Name chosen from Streamlit drop-down. Example: "Skubal, Tarik" etc.
+    :param players: players.csv from Fangraphs
     :param sequencing_choice: Choice to filter the dashboard by. Example: Pitch Type, Pitch Type with Location, Pitch Group, Pitch Group with Location
     :param selected_range: Date range of query
     :param platoon: Platoon (optional). Examples: "LHB","RHB", ""
@@ -73,16 +73,16 @@ def calculate_team_sequencing(
     Extracts top 100 results from teams.csv filtered by user selections
 
     :param df: Data from teams.csv dataframe
-    :param team: team filter. Default is all. Examples: NYM, NYY, etc
+    :param team: team filter. Default is all. Examples: NYM, NYY, etc.
     :param api_call: type of sequencing filter. Example: pitch_type, pitch_type_with_location, pitch_group
     :return: table from streamlit
 
     """
 
     if team == "All":
-        filter = pl.col("Call") == api_call
+        filter = pl.col("Call") == api_call  # type:ignore
     else:
-        filter = (pl.col("Team") == team) & (pl.col("Call") == api_call)
+        filter = (pl.col("Team") == team) & (pl.col("Call") == api_call)  # type:ignore
 
     table = df.lazy().filter(filter).sort("Amount", descending=True).head(200).collect()
 
@@ -98,7 +98,7 @@ def calculate_league_sequencing(df: pl.DataFrame, api_call: str) -> Any:
     :return:
     """
     table = df.lazy().filter(pl.col("Call") == api_call).collect()
-    grouped = table.group_by("Pitch 1", "Pitch 2").agg(pl.col(["Amount"]).sum())
+    grouped = table.group_by("Team", "Pitch 1", "Pitch 2").agg(pl.col(["Amount"]).sum())
     return st.dataframe(grouped.sort(by="Amount", descending=True))
 
 
