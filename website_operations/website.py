@@ -29,12 +29,13 @@ with st.container(border=True):
     st.write(
         "**Pitch Pairs** explores the frequencies of pitch sequences from 2025.\nLocation is optionally included. Location Zones are located on the left."
     )
-    st.write("**Wait 10 seconds to the information to populate**")
+    st.write("**Please Wait 10 seconds to the information to populate**")
 
     st.write("-----")
 
     # Adds Filters to Sidebar
     with st.sidebar:
+        st.image(parent_directory / "zones.png", width=250)
         # Adds Team/Player/League Filter
         Filter = st.selectbox(
             "Filters",
@@ -65,7 +66,6 @@ with st.container(border=True):
             help="Click to Select Pitch Sequences thrown to a LHB or RHB [Optional]. Default: None",
             label_visibility="visible",
         )
-        st.image(parent_directory / "zones.png", width=250)
 
     # Adds Sequencing Filter
     Return_Filters = st.selectbox(
