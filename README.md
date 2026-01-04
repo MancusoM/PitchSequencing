@@ -2,15 +2,18 @@
 
 This Python script powers the backend of a Streamlit "Pitch Sequencing" Dashboard that interacts with pybaseball to display real-time pitch sequencing data. This data is processed and returned as Polars DataFrames for easy manipulation and analysis.
 
-- `Python` 3.x
-- `polars` library
-- `pandas` library
-- `pybaseball` library
-- `streamlit` library
-- `pathlib` library
-- `typing` library
+###### Permanent website link: https://pitchsequencing-ny9xxhmqpcatuygmnafhwr.streamlit.app/
 
-## Folders 
+##### Libraries:
+  - `Python` 3.x
+  - `polars` library
+  - `pandas` library
+  - `pybaseball` library
+  - `streamlit` library
+  - `pathlib` library
+  - `typing` library
+
+### Folders 
 #### Calculations
 
 - calculate_sequencing.py
@@ -26,13 +29,13 @@ This Python script powers the backend of a Streamlit "Pitch Sequencing" Dashboar
 - helpers.py
     - runs main functions, creates CSV export functionality, returns streamlit table to website, calculates team and league percentages
 
-#### website_operations
-- website.py
+#### Website_operations
+- Website.py
   - sets streamlit functionality, formats webpage
-- website_funcs.py
+- Website_funcs.py
     - runs the real-time calculations to return the player pitch sequence
 
-#### images
+#### Images
 - Conclusions generated from the `Pitch Sequencing` streamlit application
   - Example 1:
       - Devin Williams's 2025 Pitch Sequences 
