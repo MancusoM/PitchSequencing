@@ -61,12 +61,6 @@ def call_statcast_pitcher(
         .alias("pitch_type"),
     )
 
-    df = df.with_columns(
-        pl.col("pitch_type")
-        .map_elements(lambda x: pitch_groups.get(x), return_dtype=pl.self_dtype())
-        .alias("pitch_group"),
-    )
-
     if platoon == "LHB":
         return df.filter(pl.col("stand") == "L")
     elif platoon == "RHB":
@@ -102,16 +96,7 @@ def define_additional_cols(uneriched_data: pl.DataFrame) -> pl.DataFrame:
             .alias("new_ab")
             .cast(pl.Int32)
         )
-        .with_columns(pl.col("new_ab").cum_sum().over("pitcher").alias("at_bat_id"))
-        .with_columns(
-            pl.concat_str(["pitch_type", "zone"], separator="; Zone:").alias(
-                "pitch_zone_combo"
-            )
-        )
-        .with_columns(
-            pl.concat_str(["pitch_group", "zone"], separator="; Zone:").alias(
-                "pitch_group_combo"
-            )
+        .with_columns(pl.col("new_ab").cum_sum().over("pitcher").alias("at_bat_id")
         )
     )
 

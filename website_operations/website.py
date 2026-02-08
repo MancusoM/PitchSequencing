@@ -29,13 +29,13 @@ with st.container(border=True):
     st.write(
         "**Pitch Pairs** explores the frequencies of pitch sequences from 2025.\nLocation is optionally included. Location Zones are located on the left."
     )
-    st.write("**Please Wait 10 seconds to the information to populate**")
+    st.write("**Please wait up to 10 seconds for sequencing data to populate**")
 
     st.write("-----")
 
     # Adds Filters to Sidebar
     with st.sidebar:
-        st.image(parent_directory / "zones.png", width=250)
+        st.image(parent_directory / "zones_2.png", width=250)
         # Adds Team/Player/League Filter
         Filter = st.selectbox(
             "Filters",
@@ -63,7 +63,7 @@ with st.container(border=True):
             "Platoon",
             ["None", "LHB", "RHB"],
             key="platoon",
-            help="Click to Select Pitch Sequences thrown to a LHB or RHB [Optional]. Default: None",
+            help="Click to Select Pitch Sequences thrown to a left-handed or right-handed batter [Optional]. Default: None",
             label_visibility="visible",
         )
 
@@ -73,8 +73,6 @@ with st.container(border=True):
         [
             "Pitch Pairs",
             "Pitch Pairs With Location",
-            "Pitch Grouping Pairs",
-            "Pitch Grouping Pairs With Location",
         ],
         key="Display Preference",
         help="Flip Through to Select Different Pitch Sequences",
@@ -84,7 +82,7 @@ with st.container(border=True):
     # Controls the Player Page
     if Filter == "Players":
         with st.sidebar:
-            default_player = list(players_list).index("Clay Holmes")
+            default_player = list(players_list).index("Freddy Peralta")
             pitcher = st.selectbox(
                 "Choose pitcher",
                 players_list,
@@ -103,15 +101,6 @@ with st.container(border=True):
         if Return_Filters == "Pitch Pairs With Location":
             table, sequence = run_main_functions(
                 pitcher, players, "pitch_zone_combo", selected_range, platoon
-            )
-        if Return_Filters == "Pitch Grouping Pairs":
-            table, sequence = run_main_functions(
-                pitcher, players, "pitch_group", selected_range, platoon
-            )
-
-        if Return_Filters == "Pitch Grouping Pairs With Location":
-            table, sequence = run_main_functions(
-                pitcher, players, "pitch_group_combo", selected_range, platoon
             )
 
     # Controls Team Filter Page
@@ -136,12 +125,6 @@ with st.container(border=True):
         if Return_Filters == "Pitch Pairs With Location":
             table = calculate_team_sequencing(team_df, team, "pitch_zone_combo")
 
-        if Return_Filters == "Pitch Grouping Pairs":
-            table = calculate_team_sequencing(team_df, team, "pitch_group")
-
-        if Return_Filters == "Pitch Grouping Pairs With Location":
-            table = calculate_team_sequencing(team_df, team, "pitch_group_combo")
-
     # Controls League Filter
     if Filter == "League":
         team_df = read_df(data_directory / "data/teams.csv")  # type:ignore
@@ -151,13 +134,6 @@ with st.container(border=True):
 
         if Return_Filters == "Pitch Pairs With Location":
             calculate_league_sequencing(team_df, "pitch_zone_combo")
-
-        if Return_Filters == "Pitch Grouping Pairs":
-            calculate_league_sequencing(team_df, "pitch_group")
-
-        if Return_Filters == "Pitch Grouping Pairs With Location":
-            calculate_league_sequencing(team_df, "pitch_group_combo")
-
     # Adds Expander
     with st.expander("Click For More Information"):
         (
