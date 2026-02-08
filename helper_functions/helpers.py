@@ -84,9 +84,18 @@ def calculate_team_sequencing(
     else:
         filter = (pl.col("Team") == team) & (pl.col("Call") == api_call)  # type:ignore
 
-    table = df.lazy().filter(filter).sort("Amount", descending=True).head(200).collect()
+    table = df.lazy().filter(filter).unique().sort("Amount", descending=True).head(200).collect()
 
-    st.dataframe(table[["Name", "Pitch 1", "Pitch 2", "Amount", "%"]])
+    if api_call == 'pitch_type':
+        st.dataframe(table[["Name", "Pitch 1", 'Pitch 1 Whiff %',"Pitch 2",'Pitch 2 Whiff %', "Amount", "Usage %"]])
+
+    if api_call == 'pitch_zone_combo':
+        st.dataframe(table[["Name", "Pitch 1", 'Pitch 1 Whiff %',"Pitch 2",'Pitch 2 Whiff %', "Amount", "Usage %"]])
+
+
+    else:
+        st.dataframe(table[["Name", "Pitch 1", "Pitch 2", "Amount", "Usage %"]])
+
     create_csv_button(table, "Team Sequencing")
     return table
 

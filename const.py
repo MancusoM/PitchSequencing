@@ -17,6 +17,8 @@ pitch_types = {
     "FA": "Other",
 }
 
+inverse_pitch_types = {v:k for k,v in pitch_types.items()}
+
 pitch_groups = {
     "Other": "Other",
     "Eeuphus": "Other",

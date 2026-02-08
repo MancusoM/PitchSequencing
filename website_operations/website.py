@@ -71,10 +71,9 @@ with st.container(border=True):
     Return_Filters = st.selectbox(
         "Filters",
         [
-            "Pitch Pairs",
-            "Pitch Pairs With Location",
-            "Pitch Grouping Pairs",
-            "Pitch Grouping Pairs With Location",
+            "Pitch Sequencing",
+            "Pitch Sequencing With Location",
+            "Pitch Sequencing With Whiffs"
         ],
         key="Display Preference",
         help="Flip Through to Select Different Pitch Sequences",
@@ -100,11 +99,11 @@ with st.container(border=True):
                 pitcher, players, "pitch_type", selected_range, platoon
             )
 
-        if Return_Filters == "Pitch Pairs With Location":
+        if Return_Filters == "Pitch Sequencing With Location":
             table, sequence = run_main_functions(
                 pitcher, players, "pitch_zone_combo", selected_range, platoon
             )
-        if Return_Filters == "Pitch Grouping Pairs":
+        if Return_Filters == "Pitch Sequencing With Whiffs":
             table, sequence = run_main_functions(
                 pitcher, players, "pitch_group", selected_range, platoon
             )
@@ -116,7 +115,7 @@ with st.container(border=True):
 
     # Controls Team Filter Page
     if Filter == "Team":
-        team_df = read_df(data_directory / "data/teams.csv")  # type:ignore
+        team_df = read_df(data_directory / "data/test.csv")  # type:ignore
         teams = list(set(team_df["Team"]))
         teams.remove("NYM")
         teams.insert(0, "All")
@@ -133,10 +132,10 @@ with st.container(border=True):
         if Return_Filters == "Pitch Pairs":
             table = calculate_team_sequencing(team_df, team, "pitch_type")
 
-        if Return_Filters == "Pitch Pairs With Location":
+        if Return_Filters == "Pitch Sequencing With Location":
             table = calculate_team_sequencing(team_df, team, "pitch_zone_combo")
 
-        if Return_Filters == "Pitch Grouping Pairs":
+        if Return_Filters == "Pitch Sequencing With Whiffs":
             table = calculate_team_sequencing(team_df, team, "pitch_group")
 
         if Return_Filters == "Pitch Grouping Pairs With Location":
@@ -149,10 +148,10 @@ with st.container(border=True):
         if Return_Filters == "Pitch Pairs":
             calculate_league_sequencing(team_df, "pitch_type")
 
-        if Return_Filters == "Pitch Pairs With Location":
+        if Return_Filters == "Pitch Sequencing With Location":
             calculate_league_sequencing(team_df, "pitch_zone_combo")
 
-        if Return_Filters == "Pitch Grouping Pairs":
+        if Return_Filters == "Pitch Sequencing With Whiffs":
             calculate_league_sequencing(team_df, "pitch_group")
 
         if Return_Filters == "Pitch Grouping Pairs With Location":
