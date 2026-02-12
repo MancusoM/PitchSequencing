@@ -24,21 +24,22 @@ def run_main_functions(
 
     :return: streamlit table, sequencing dataframe - to be exported as CSVs
     """
+
     try:
         table, sequence, mlbID = calculate_sequence(
             pitcher, players, sequencing_choice, selected_range, platoon
         )
-        st.dataframe(table[["Pitch 1", "Pitch 2", "Amount", "%"]], hide_index=True)
 
-    except Exception:  # type:ignore
-        return st.error("An Error Has Occurred. \nPlease Refresh The Page", icon="🚨")
+    except Exception as e:  # type:ignore
+        st.write(e)
+        return st.error("An Error Has Occurred. \nPlease Refresh The Page. Contact the author if this persists", icon="🚨")
 
-    head_col1, head_col2, head_col3 = st.columns(3)
-    with head_col1:
+    footer_column1, footer_column2, footer_column3 = st.columns(3)
+    with footer_column1:
         create_csv_button(sequence, "Raw Sequencing")
-    with head_col2:
+    with footer_column2:
         create_csv_button(table, "Frequency")
-    with head_col3:
+    with footer_column3:
         st.link_button(
             "Pitcher Plinko",
             f"https://baseballsavant.mlb.com/visuals/pitch-plinko?playerId={mlbID}",
@@ -64,9 +65,17 @@ def create_csv_button(df: pl.DataFrame, name: str):
         mime="text/csv",
     )
 
+def return_pitch_filter(pitch_one_list,pitch_two_list):
+    st.write(pitch_one_list,pitch_two_list)
+    if pitch_one_list =="None":
+        return pl.col("Pitch 2") ==pitch_two_list
+    else:
+        return pl.col("Pitch 1") ==pitch_one_list
+
+#def return_zone_filter(zone_one, zone_two)
 
 def calculate_team_sequencing(
-    df: pl.DataFrame, team: str, api_call: str
+    df: pl.DataFrame, team: str, api_call: str, pitch_one_list, pitch_two_list
 ) -> pl.DataFrame:
     """
 
@@ -79,16 +88,64 @@ def calculate_team_sequencing(
 
     """
 
+    #Turn into function
     if team == "All":
         filter = pl.col("Call") == api_call  # type:ignore
     else:
         filter = (pl.col("Team") == team) & (pl.col("Call") == api_call)  # type:ignore
+    #return filter
+    '''
+    if pitch_one_list != "None" and pitch_two_list !="None":
+        pitch_filter = (pl.col("Pitch 1") == pitch_one_list) & (pl.col("Pitch 2") == pitch_two_list)
+    elif pitch_one_list or pitch_two_list !="None":
+        pitch_filter = filter & return_pitch_filter(pitch_one_list,pitch_two_list)
 
-    table = df.lazy().filter(filter).sort("Amount", descending=True).head(200).collect()
+    if pitch_one_list == "None" and pitch_two_list =="None":
+        st.write('here')
+        pass
+    else:
+        filter  = filter & pitch_filter
+    '''
+    #return filter
+    '''
+    else:
+        st.write(df)
+        # Turn into function
+        if team == "All":
+            filter = pl.col("Call") == api_call  # type:ignore
+        elif team != "All":
+            filter = (pl.col("Team") == team) & (pl.col("Call") == api_call)  # type:ignore
+        st.write(filter)
 
-    st.dataframe(table[["Name", "Pitch 1", "Pitch 2", "Amount", "%"]])
-    create_csv_button(table, "Team Sequencing")
-    return table
+        if pitch_one_list != "None" and pitch_two_list != "None":
+            pitch_filter = (pl.col("Pitch 1") == pitch_one_list) & (pl.col("Pitch 2") == pitch_two_list)
+        elif pitch_one_list or pitch_two_list != "None":
+            pitch_filter = filter & return_pitch_filter(pitch_one_list, pitch_two_list)
+
+        if pitch_one_list == "None" and pitch_two_list == "None":
+            st.write('here')
+            pass
+        else:
+            filter = filter & pitch_filter
+
+        if pitch_one_list != "None" and pitch_two_list != "None":
+            pitch_filter = (pl.col("Pitch 1") == pitch_one_list) & (pl.col("Pitch 2") == pitch_two_list)
+        elif pitch_one_list or pitch_two_list != "None":
+            pitch_filter = filter & return_pitch_filter(pitch_one_list, pitch_two_list)
+
+        if pitch_one_list == "None" and pitch_two_list == "None":
+            st.write('here')
+            pass
+        else:
+            filter = filter & pitch_filter
+    '''
+    #return df
+    #st.write(pitch_filter)
+    return df.lazy().filter(filter).sort("Amount", descending=True).head(200).collect()
+
+    #st.dataframe(table[["Name", "Pitch 1", "Pitch 2", "Amount", "%"]])
+    #create_csv_button(table, "Team Sequencing")
+    #return table
 
 
 def calculate_league_sequencing(df: pl.DataFrame, api_call: str) -> Any:

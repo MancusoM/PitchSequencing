@@ -17,6 +17,7 @@ pitch_types = {
     "FA": "Other",
 }
 
+pitch_types_list = [value for value in pitch_types.values()]
 pitch_groups = {
     "Other": "Other",
     "Eeuphus": "Other",
@@ -67,6 +68,10 @@ teams_dict = {
     "White Sox": "CWS",
     "Yankees": "NYY",
 }
+
+#zones_list = [f"Zone:{zone}" for zone in range(1,17)]
+#print(zones_list)
+zones_list = [' Zone:1', ' Zone:2', ' Zone:3', ' Zone:4', ' Zone:5', ' Zone:6', ' Zone:7', ' Zone:8', ' Zone:9', ' Zone:10', ' Zone:11', ' Zone:12', ' Zone:13', ' Zone:14', ' Zone:15', ' Zone:16']
 
 team_list = [value for key, value in teams_dict.items()]
 

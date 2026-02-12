@@ -3,7 +3,7 @@
 # ======================================================
 
 from collections import Counter
-from const import pitch_groups, pitch_types
+from const import pitch_types
 from datetime import datetime
 from pybaseball import statcast_pitcher
 import polars as pl
@@ -96,7 +96,11 @@ def define_additional_cols(uneriched_data: pl.DataFrame) -> pl.DataFrame:
             .alias("new_ab")
             .cast(pl.Int32)
         )
-        .with_columns(pl.col("new_ab").cum_sum().over("pitcher").alias("at_bat_id")
+        .with_columns(pl.col("new_ab").cum_sum().over("pitcher").alias("at_bat_id"))
+        .with_columns(
+            pl.concat_str(["pitch_type", "zone"], separator="; Zone:").alias(
+                "pitch_zone_combo"
+            )
         )
     )
 
@@ -111,7 +115,7 @@ def create_pitch_sequencing(enriched_df: pl.DataFrame, choice: str) -> pl.DataFr
     """
 
     :param enriched_df: enriched_data from the 'define_addtional_cols' function
-    :param choice: choice of pitch type w or w/o location & pitch group w or w/o location
+    :param choice: choice of pitch type w or w/o location
     :return: pitch that grouped by pitcher and unique at-bat
     """
 

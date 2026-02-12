@@ -6,6 +6,7 @@ parent_directory = current_script_path.parent
 
 import sys
 import os
+import streamlit as st
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
@@ -53,5 +54,4 @@ def calculate_sequence(
     enriched_player_data = define_additional_cols(player_pitch_data)
     pitch_sequences = create_pitch_sequencing(enriched_player_data, sequencing_choice)
     table = count_combinations(pitch_sequences).head(20)
-
     return table, pitch_sequences, mlbID
