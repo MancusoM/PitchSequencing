@@ -69,8 +69,6 @@ teams_dict = {
     "Yankees": "NYY",
 }
 
-# zones_list = [f"Zone:{zone}" for zone in range(1,17)]
-# print(zones_list)
 zones_list = [
     " Zone:1",
     " Zone:2",

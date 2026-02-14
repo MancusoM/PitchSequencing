@@ -180,7 +180,7 @@ with st.container(border=True):
     # Controls Team Filter Page
     if Filter == "Team":
         team_df = read_df(data_directory / "data/teams.csv")  # type:ignore
-        teams = list(set(team_df["Team"]))
+        teams = sorted(list(set(team_df["Team"])))
         teams.remove("NYM")
         teams.insert(0, "All")
         teams.insert(1, "NYM")
@@ -199,7 +199,6 @@ with st.container(border=True):
                 pitch_one_list = set_up_list(pitch_types_list, "N/A", f"{pitches[0]}")
                 pitch_two_list = set_up_list(pitch_types_list, "N/A", f"{pitches[1]}")
 
-            st.write(pitch_one_list, pitch_two_list)
             table = calculate_team_sequencing(team_df, team, "pitch_type")
 
             filtered_table = return_filtered_dataframes(
