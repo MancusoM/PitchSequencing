@@ -7,6 +7,7 @@ from const import pitch_types
 from datetime import datetime
 from pybaseball import statcast_pitcher
 import polars as pl
+import streamlit as st
 
 # ======================================================
 #  1️⃣  Retrieve MLBAM Id From Baseball Savant
@@ -43,15 +44,18 @@ def call_statcast_pitcher(
     :param platoon: applicable if the user selects a filter option on Streamlit
     :return: a filtered scrape from Baseball Savant
     """
-    df = pl.from_pandas(
-        statcast_pitcher(str(start_date), str(end_date), player_id=player_id),
-        schema_overrides={
-            "zone": pl.Int32,
-            "batter": pl.Int32,
-            "inning": pl.Int32,
-            "outs": pl.Int32,
-        },
-    )
+    try:
+        df = pl.from_pandas(
+            statcast_pitcher(str(start_date), str(end_date), player_id=player_id),
+            schema_overrides={
+                "zone": pl.Int32,
+                "batter": pl.Int32,
+                "inning": pl.Int32,
+                "outs": pl.Int32,
+            },
+        )
+    except Exception as e:
+        st.error("Statcast API failed. Error: ", e, icon="⚠️")
 
     # Preprocessing
 

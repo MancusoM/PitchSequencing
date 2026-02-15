@@ -1,10 +1,10 @@
 import streamlit as st
-from datetime import date
-
-from pathlib import Path
+import polars as pl
 import sys
 import os
-import polars as pl
+
+from datetime import date
+from pathlib import Path
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
@@ -12,16 +12,19 @@ sys.path.append(os.path.dirname(SCRIPT_DIR))
 current_script_path = Path(__file__).resolve()
 parent_directory = current_script_path.parent
 data_directory = current_script_path.parent.parent
-from const import pitch_types_list, zones_list, pitches
 
-from helper_functions.helpers import (
+from helper_functions.helper_calculations import (
     run_main_functions,
-    calculate_team_sequencing,
+    calculate_team_sequencing)
+from helper_functions.helpers_website import (
     return_filtered_dataframes,
     read_df,
     set_up_footer,
     set_up_list,
 )
+from helper_functions.return_profile_pic import return_profile_pics
+
+from const import pitch_types_list, zones_list, pitches
 
 # Create Website Emoji
 st.set_page_config(
@@ -34,11 +37,11 @@ st.set_page_config(
 # Create Border and configures webpage layout
 with st.container(border=True):
     # Create Headers
-    st.subheader("Pitch Pairs ⚾️")
-    header_col1, header_col2 = st.columns(2)
-    with header_col1:
+    header_1, header_2 = st.columns(2)
+    with header_1:
+        st.subheader("Pitch Pairs ⚾️")
         st.write(
-            "**Pitch Pairs** explores the frequencies of pitch sequences from 2025.\n\nLocation is optionally included. Location Zones are located on the left."
+            "**Pitch Pairs** explores the frequencies of pitch sequences from 2025.\n\n Location Zones can be accessed by flipping the center toggle to the second option"
         )
         st.write("**Please wait up to 10 seconds for sequencing data to populate**")
 
@@ -46,13 +49,12 @@ with st.container(border=True):
 
     # Adds Filters to Sidebar
     with st.sidebar:
-        st.image(data_directory / "images/zones_2.png", width=250)
         # Adds Team/Player/League Filter
         Filter = st.selectbox(
             "Filters",
-            ["Players", "Team", "League"],
+            ["Players", "Team"],
             key="Grouping",
-            help="Click to Filter Sequencing at a Player, Team, or League level",
+            help="Click to Filter Sequencing at a Player or a Team level",
             label_visibility="visible",
         )
 
@@ -100,14 +102,16 @@ with st.container(border=True):
             )
 
         st.write(f"{pitcher}'s 20 Most Frequent Pitch Sequences")
-
         if Return_Filters == "Pitch Pairs":
             table, sequence, mlbID = run_main_functions(
                 pitcher, players, "pitch_type", selected_range, platoon
             )
+            with header_2:
+                with st.container(border=True,horizontal_alignment="center"):
+                    st.image(return_profile_pics(mlbID))
             with st.sidebar:
-                pitch_one_list = set_up_list(table, pitches[0], pitches[0])
-                pitch_two_list = set_up_list(table, pitches[1], pitches[1])
+                pitch_one_list = set_up_list(table, "Pitch 1", "Pitch 1")
+                pitch_two_list = set_up_list(table, pitches[1], f"{pitches[1]}")
 
             filtered = return_filtered_dataframes(
                 table, pitch_one_list, pitch_two_list, pitches[0], pitches[1]
@@ -122,6 +126,11 @@ with st.container(border=True):
             table, sequence, mlbID = run_main_functions(
                 pitcher, players, "pitch_zone_combo", selected_range, platoon
             )
+            with header_2:
+                temp1, temp2, temp3 = st.columns(3)
+                with temp2:
+                    with st.container(border=True,horizontal_alignment='center'):
+                        st.image(return_profile_pics(mlbID))
             table = (
                 table.with_columns(
                     pl.col(pitches[0])
@@ -147,6 +156,7 @@ with st.container(border=True):
                 .drop("field_2")
             )
             with st.sidebar:
+                st.image(data_directory / "images/zones_2.png", width=250)
                 pitch_one_list = set_up_list(table, f"{pitches[0]} Pitch", "Pitch 1")
                 pitch_one_zone_list = set_up_list(
                     table, f"{pitches[0]} Zone", "Pitch 1 Zone"
@@ -214,6 +224,7 @@ with st.container(border=True):
 
         if Return_Filters == "Pitch Pairs With Location":
             with st.sidebar:
+                st.image(data_directory / "images/zones_2.png", width=250)
                 pitch_one_list = set_up_list(pitch_types_list, "", pitches[0])
                 pitch_two_list = set_up_list(pitch_types_list, "", pitches[1])
                 pitch_one_zone_list = set_up_list(zones_list, "", "Zone 1")

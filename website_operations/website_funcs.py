@@ -1,15 +1,10 @@
-from pathlib import Path
-
-# Retreats Directory From Parent Path
-current_script_path = Path(__file__).resolve()
-parent_directory = current_script_path.parent
-
 import sys
 import os
-import streamlit as st
 
-SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(os.path.dirname(SCRIPT_DIR))
+from typing import Any
+from pathlib import Path
+import polars as pl
+import streamlit as st
 
 from calculations.calculate_sequencing import (
     retrieve_mlb_id,
@@ -18,10 +13,15 @@ from calculations.calculate_sequencing import (
     create_pitch_sequencing,
     count_combinations,
 )
-from typing import Any
-import polars as pl
 
+# Retrieves Directory From Parent Path
+current_script_path = Path(__file__).resolve()
+parent_directory = current_script_path.parent
 
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
+
+st.cache_data()
 def calculate_sequence(
     pitcher: str,
     players: pl.DataFrame,

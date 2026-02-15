@@ -1,43 +1,9 @@
-from website_operations.website_funcs import calculate_sequence
 import streamlit as st
 import polars as pl
 from typing import Any, Union
 import pandas as pd
 
-
-def run_main_functions(
-    pitcher: str,
-    players: pl.DataFrame,
-    sequencing_choice: str,
-    selected_range: Any,
-    platoon: str,
-) -> tuple[Any, Any, Any]:
-    """
-
-    Runs Main Sequencing Functions to return table to streamlit dashboard
-
-    :param pitcher: - player Name chosen from Streamlit drop-down. Example: "Skubal, Tarik" etc.
-    :param players: players.csv from Fangraphs
-    :param sequencing_choice: Choice to filter the dashboard by. Example: Pitch Type, Pitch Type with Location, Pitch Group, Pitch Group with Location
-    :param selected_range: Date range of query
-    :param platoon: Platoon (optional). Examples: "LHB","RHB", ""
-
-    :return: streamlit table, sequencing dataframe - to be exported as CSVs
-    """
-
-    try:
-        table, sequence, mlbID = calculate_sequence(
-            pitcher, players, sequencing_choice, selected_range, platoon
-        )
-
-    except Exception as e:  # type:ignore
-        return st.error(
-            "An Error Has Occurred. \nPlease Refresh The Page. Contact the author if this persists",
-            icon="🚨",
-        )
-    return table, sequence, mlbID
-
-
+st.cache_data()
 def create_csv_button(df: pl.DataFrame, name: str):
     """
 
@@ -56,28 +22,7 @@ def create_csv_button(df: pl.DataFrame, name: str):
         mime="text/csv",
     )
 
-
-def calculate_team_sequencing(
-    df: pl.DataFrame, team: str, api_call: str
-) -> pl.DataFrame:
-    """
-
-    Extracts top 100 results from teams.csv filtered by user selections
-
-    :param df: Data from teams.csv dataframe
-    :param team: team filter. Default is all. Examples: NYM, NYY, etc.
-    :param api_call: type of sequencing filter. Example: pitch_type, pitch_type_with_location, pitch_group
-    :return: table from streamlit
-
-    """
-    if team == "All":
-        filter = pl.col("Call") == api_call  # type:ignore
-    else:
-        filter = (pl.col("Team") == team) & (pl.col("Call") == api_call)  # type:ignore
-
-    return df.lazy().filter(filter).sort("Amount", descending=True).collect()
-
-
+st.cache_data()
 def return_filtered_dataframes(
     dataframe: pl.DataFrame,
     filter_1: Union[str],
@@ -95,13 +40,13 @@ def return_filtered_dataframes(
     :param target_col2: column that is filtered by value 2
     :return:filtered dataframe
     """
-    if filter_1 == "None":
-        if filter_2 == "None":
+    if filter_1 == "None" or filter_1 == None:
+        if filter_2 == "None" or filter_2 ==None:
             return dataframe
         else:
             return dataframe.lazy().filter(pl.col(target_col2) == filter_2).collect()
     else:
-        if filter_2 == "None":
+        if filter_2 == "None" or filter_2 == None:
             return dataframe.lazy().filter(pl.col(target_col1) == filter_1).collect()
         else:
             return (
@@ -113,7 +58,7 @@ def return_filtered_dataframes(
                 .collect()
             )
 
-
+st.cache_data()
 def calculate_percentage(data: pl.DataFrame) -> pl.DataFrame:
     """
 
@@ -125,7 +70,7 @@ def calculate_percentage(data: pl.DataFrame) -> pl.DataFrame:
     grouped = data.group_by("Pitcher").agg(pl.col("Amount").sum())
     return data.join(grouped, how="full", on="Pitcher")
 
-
+st.cache_data()
 def read_df(df: pd.DataFrame) -> pl.DataFrame:
     """
     Turns pandas df into polars df
@@ -135,7 +80,7 @@ def read_df(df: pd.DataFrame) -> pl.DataFrame:
     """
     return pl.read_csv(df)
 
-
+st.cache_data()
 def set_up_footer(table: pl.DataFrame, sequence: pl.DataFrame, mlbID: str) -> None:
     """
     Sets up footer with option to export data
@@ -157,7 +102,7 @@ def set_up_footer(table: pl.DataFrame, sequence: pl.DataFrame, mlbID: str) -> No
             f"https://baseballsavant.mlb.com/visuals/pitch-plinko?playerId={mlbID}",
         )
 
-
+st.cache_data()
 def set_up_list(table: Union[str] | pl.DataFrame, column: str, option: str) -> Any:
     """
     Creates Filters Located on the sidebar
@@ -173,8 +118,8 @@ def set_up_list(table: Union[str] | pl.DataFrame, column: str, option: str) -> A
     if isinstance(table, pl.DataFrame):
         pitch_list = table[column]
     else:
-        pitch_list = table
-    pitch_list = sorted(list(set(pitch_list)))
+        pitch_list = sorted(table)
+    pitch_list = list(set(pitch_list))
     pitch_list.insert(0, "None")
     default_pitch = pitch_list.index("None")
 

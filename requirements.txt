@@ -4,3 +4,4 @@ pybaseball>=2.2.6
 streamlit==1.52.2
 pathlib==1.0.1
 typing==3.7.4
+requests==2.32.5
