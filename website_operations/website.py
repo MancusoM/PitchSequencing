@@ -15,7 +15,8 @@ data_directory = current_script_path.parent.parent
 
 from helper_functions.helper_calculations import (
     run_main_functions,
-    calculate_team_sequencing)
+    calculate_team_sequencing,
+)
 from helper_functions.helpers_website import (
     return_filtered_dataframes,
     read_df,
@@ -107,7 +108,7 @@ with st.container(border=True):
                 pitcher, players, "pitch_type", selected_range, platoon
             )
             with header_2:
-                with st.container(border=True,horizontal_alignment="center"):
+                with st.container(border=True, horizontal_alignment="center"):
                     st.image(return_profile_pics(mlbID))
             with st.sidebar:
                 pitch_one_list = set_up_list(table, "Pitch 1", "Pitch 1")
@@ -129,7 +130,7 @@ with st.container(border=True):
             with header_2:
                 temp1, temp2, temp3 = st.columns(3)
                 with temp2:
-                    with st.container(border=True,horizontal_alignment='center'):
+                    with st.container(border=True, horizontal_alignment="center"):
                         st.image(return_profile_pics(mlbID))
             table = (
                 table.with_columns(

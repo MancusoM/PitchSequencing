@@ -22,6 +22,8 @@ SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
 
 st.cache_data()
+
+
 def calculate_sequence(
     pitcher: str,
     players: pl.DataFrame,

@@ -4,6 +4,8 @@ import polars as pl
 from typing import Any
 
 st.cache_data()
+
+
 def run_main_functions(
     pitcher: str,
     players: pl.DataFrame,
@@ -36,7 +38,10 @@ def run_main_functions(
         )
     return table, sequence, mlbID
 
+
 st.cache_data()
+
+
 def calculate_team_sequencing(
     df: pl.DataFrame, team: str, api_call: str
 ) -> pl.DataFrame:

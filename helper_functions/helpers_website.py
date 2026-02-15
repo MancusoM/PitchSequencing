@@ -4,6 +4,8 @@ from typing import Any, Union
 import pandas as pd
 
 st.cache_data()
+
+
 def create_csv_button(df: pl.DataFrame, name: str):
     """
 
@@ -22,7 +24,10 @@ def create_csv_button(df: pl.DataFrame, name: str):
         mime="text/csv",
     )
 
+
 st.cache_data()
+
+
 def return_filtered_dataframes(
     dataframe: pl.DataFrame,
     filter_1: Union[str],
@@ -41,7 +46,7 @@ def return_filtered_dataframes(
     :return:filtered dataframe
     """
     if filter_1 == "None" or filter_1 == None:
-        if filter_2 == "None" or filter_2 ==None:
+        if filter_2 == "None" or filter_2 == None:
             return dataframe
         else:
             return dataframe.lazy().filter(pl.col(target_col2) == filter_2).collect()
@@ -58,7 +63,10 @@ def return_filtered_dataframes(
                 .collect()
             )
 
+
 st.cache_data()
+
+
 def calculate_percentage(data: pl.DataFrame) -> pl.DataFrame:
     """
 
@@ -70,7 +78,10 @@ def calculate_percentage(data: pl.DataFrame) -> pl.DataFrame:
     grouped = data.group_by("Pitcher").agg(pl.col("Amount").sum())
     return data.join(grouped, how="full", on="Pitcher")
 
+
 st.cache_data()
+
+
 def read_df(df: pd.DataFrame) -> pl.DataFrame:
     """
     Turns pandas df into polars df
@@ -80,7 +91,10 @@ def read_df(df: pd.DataFrame) -> pl.DataFrame:
     """
     return pl.read_csv(df)
 
+
 st.cache_data()
+
+
 def set_up_footer(table: pl.DataFrame, sequence: pl.DataFrame, mlbID: str) -> None:
     """
     Sets up footer with option to export data
@@ -102,7 +116,10 @@ def set_up_footer(table: pl.DataFrame, sequence: pl.DataFrame, mlbID: str) -> No
             f"https://baseballsavant.mlb.com/visuals/pitch-plinko?playerId={mlbID}",
         )
 
+
 st.cache_data()
+
+
 def set_up_list(table: Union[str] | pl.DataFrame, column: str, option: str) -> Any:
     """
     Creates Filters Located on the sidebar
