@@ -3,10 +3,11 @@
 # ======================================================
 
 from collections import Counter
-from const import pitch_groups, pitch_types
+from const import pitch_types
 from datetime import datetime
 from pybaseball import statcast_pitcher
 import polars as pl
+import streamlit as st
 
 # ======================================================
 #  1️⃣  Retrieve MLBAM Id From Baseball Savant
@@ -43,15 +44,18 @@ def call_statcast_pitcher(
     :param platoon: applicable if the user selects a filter option on Streamlit
     :return: a filtered scrape from Baseball Savant
     """
-    df = pl.from_pandas(
-        statcast_pitcher(str(start_date), str(end_date), player_id=player_id),
-        schema_overrides={
-            "zone": pl.Int32,
-            "batter": pl.Int32,
-            "inning": pl.Int32,
-            "outs": pl.Int32,
-        },
-    )
+    try:
+        df = pl.from_pandas(
+            statcast_pitcher(str(start_date), str(end_date), player_id=player_id),
+            schema_overrides={
+                "zone": pl.Int32,
+                "batter": pl.Int32,
+                "inning": pl.Int32,
+                "outs": pl.Int32,
+            },
+        )
+    except Exception as e:
+        st.error("Statcast API failed. Error: ", e, icon="⚠️")
 
     # Preprocessing
 
@@ -59,12 +63,6 @@ def call_statcast_pitcher(
         pl.col("pitch_type")
         .map_elements(lambda x: pitch_types.get(x), return_dtype=pl.self_dtype())
         .alias("pitch_type"),
-    )
-
-    df = df.with_columns(
-        pl.col("pitch_type")
-        .map_elements(lambda x: pitch_groups.get(x), return_dtype=pl.self_dtype())
-        .alias("pitch_group"),
     )
 
     if platoon == "LHB":
@@ -108,11 +106,6 @@ def define_additional_cols(uneriched_data: pl.DataFrame) -> pl.DataFrame:
                 "pitch_zone_combo"
             )
         )
-        .with_columns(
-            pl.concat_str(["pitch_group", "zone"], separator="; Zone:").alias(
-                "pitch_group_combo"
-            )
-        )
     )
 
 
@@ -126,7 +119,7 @@ def create_pitch_sequencing(enriched_df: pl.DataFrame, choice: str) -> pl.DataFr
     """
 
     :param enriched_df: enriched_data from the 'define_addtional_cols' function
-    :param choice: choice of pitch type w or w/o location & pitch group w or w/o location
+    :param choice: choice of pitch type w or w/o location
     :return: pitch that grouped by pitcher and unique at-bat
     """
 
