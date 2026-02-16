@@ -136,7 +136,7 @@ def set_up_list(table: Union[str] | pl.DataFrame, column: str, option: str) -> A
         pitch_list = table[column]
     else:
         pitch_list = sorted(table)
-    pitch_list = list(set(pitch_list))
+    pitch_list = sorted(list(set(pitch_list)))
     pitch_list.insert(0, "None")
     default_pitch = pitch_list.index("None")
 
